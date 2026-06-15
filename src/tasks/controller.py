@@ -29,9 +29,50 @@ def get_tasks(db:Session):
 def get_one_task( task_id:int, db:Session):
     one_task = db.query(TaskModel).get(task_id)
     if not one_task:
-        raise HTTPException(404, detail='Task Id is Incorrect')
+        raise HTTPException(404, detail='Task Not Found')
     
     return {
     "status" : "Task Fatched Successfully.",
     "data" : one_task
     }
+
+def update_task(body:TaskSchema, task_id:int, db:Session):
+    one_task = db.query(TaskModel).get(task_id)
+    if not one_task:
+        raise HTTPException(404, detail='Task Not Found')
+    
+    # only specific details
+    body = body.model_dump()
+    print(body)
+    for field, value in body.items():
+        setattr(one_task,field,value)
+    
+    # it is compulsory to give all details
+    # one_task.title = body.title
+    # one_task.description = body.description
+    # one_task.is_completed = body.is_completed
+
+    db.add(one_task)
+    db.commit()
+    db.refresh(one_task)
+
+    return {
+            "status" : "Task Updated Successfully.",
+            "Data" : one_task
+            }
+
+
+
+def delete_task(task_id: int, db:Session):
+    one_task = db.query(TaskModel).get(task_id)
+    if not one_task:
+        raise HTTPException(404, detail='Task Not Found')
+    
+    db.delete(one_task)
+    db.commit()
+
+    return {
+            "status" : "Task Delete Successfully.",
+            "Data" : one_task
+            }
+
