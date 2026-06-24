@@ -23,7 +23,7 @@ def create_task(body: TaskSchema, db=Depends(get_db), user:UserModel = Depends(i
     "/all_task", response_model=List[TaskResponseSchema], status_code=status.HTTP_200_OK
 )
 def get_all_tasks(db=Depends(get_db), user:UserModel = Depends(is_authenticated)):
-    return controller.get_tasks(db)
+    return controller.get_tasks(db, user)
 
 
 @task_routes.get(
@@ -39,9 +39,9 @@ def get_one_task(_id: int, db=Depends(get_db), user:UserModel = Depends(is_authe
     status_code=status.HTTP_201_CREATED,
 )
 def update_task(body: TaskSchema, _id: int, db=Depends(get_db), user:UserModel = Depends(is_authenticated)):
-    return controller.update_task(body, _id, db)
+    return controller.update_task(body, _id, db, user)
 
 
 @task_routes.delete("/delete/{_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_task(_id: int, db=Depends(get_db), user:UserModel = Depends(is_authenticated)):
-    return controller.delete_task(_id, db)
+    return controller.delete_task(_id, db, user)
